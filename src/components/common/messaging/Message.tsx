@@ -99,7 +99,7 @@ function Message({
                 <MessageInfo>
                     {head ? (
                         <UserIcon
-                            target={user!._id}
+                            target={user?._id}
                             size={36}
                             onContextMenu={userContext}
                             onClick={openProfile}

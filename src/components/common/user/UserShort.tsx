@@ -24,7 +24,7 @@ export default function UserShort({
 }) {
     return (
         <>
-            <UserIcon size={size ?? 24} target={user!._id} />
+            <UserIcon size={size ?? 24} target={user?._id} />
             <Username username={user?.username} />
         </>
     );

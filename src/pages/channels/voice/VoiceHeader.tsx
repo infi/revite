@@ -87,7 +87,7 @@ export default function VoiceHeader({ id }: Props) {
                               <div key={id}>
                                   <UserIcon
                                       size={80}
-                                      target={user!._id}
+                                      target={user?._id}
                                       status={false}
                                       voice={
                                           participants!.get(id)?.audio
@@ -100,7 +100,7 @@ export default function VoiceHeader({ id }: Props) {
                       })
                     : self !== undefined && (
                           <div
-                              key={ctx.client.user!._id}
+                              key={ctx.client.user?._id}
                               className="disconnected">
                               {/* ! HOOKS <UserIcon
                                   size={80}

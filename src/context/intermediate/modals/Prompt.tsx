@@ -324,7 +324,7 @@ export function SpecialPromptModal(props: SpecialProps) {
                     ]}
                     content={
                         <div className={styles.column}>
-                            <UserIcon target={user!._id} size={64} />
+                            <UserIcon target={user?._id} size={64} />
                             <Text
                                 id="app.special.modals.prompt.confirm_kick"
                                 fields={{ name: user?.username }}
@@ -377,7 +377,7 @@ export function SpecialPromptModal(props: SpecialProps) {
                     ]}
                     content={
                         <div className={styles.column}>
-                            <UserIcon target={user!._id} size={64} />
+                            <UserIcon target={user?._id} size={64} />
                             <Text
                                 id="app.special.modals.prompt.confirm_ban"
                                 fields={{ name: user?.username }}
