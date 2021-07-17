@@ -142,20 +142,6 @@ export function useChannels(ids?: string[], context?: HookContext) {
     )[];
 }
 
-export function useServer(id?: string, context?: HookContext) {
-    if (typeof id === "undefined") return;
-    return useObject("servers", id, context) as
-        | Readonly<Servers.Server>
-        | undefined;
-}
-
-export function useServers(ids?: string[], context?: HookContext) {
-    return useObject("servers", ids, context) as (
-        | Readonly<Servers.Server>
-        | undefined
-    )[];
-}
-
 export function useDMs(context?: HookContext) {
     const ctx = useForceUpdate(context);
 

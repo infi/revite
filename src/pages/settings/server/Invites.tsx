@@ -17,7 +17,7 @@ import IconButton from "../../../components/ui/IconButton";
 import Preloader from "../../../components/ui/Preloader";
 
 interface Props {
-    server: Servers.Server;
+    server: string;
 }
 
 export function Invites({ server }: Props) {
@@ -69,7 +69,7 @@ export function Invites({ server }: Props) {
 
     useEffect(() => {
         client.servers
-            .fetchInvites(server._id)
+            .fetchInvites(server)
             .then((invites) => setInvites(invites));
     }, []);
 

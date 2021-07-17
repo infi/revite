@@ -16,8 +16,8 @@ import { Unreads } from "../../../redux/reducers/unreads";
 import { useIntermediate } from "../../../context/intermediate/Intermediate";
 import {
     useChannels,
+    useData,
     useForceUpdate,
-    useServers,
 } from "../../../context/revoltjs/hooks";
 
 import logoSVG from "../../../assets/logo.svg";
@@ -171,7 +171,7 @@ interface Props {
 
 export function ServerListSidebar({ unreads, lastOpened }: Props) {
     const ctx = useForceUpdate();
-    const activeServers = useServers(undefined, ctx) as Servers.Server[];
+    /*const activeServers = useServers(undefined, ctx) as Servers.Server[];
     const channels = (useChannels(undefined, ctx) as Channel[]).map((x) =>
         mapChannelWithUnread(x, unreads),
     );
@@ -198,15 +198,15 @@ export function ServerListSidebar({ unreads, lastOpened }: Props) {
                 : undefined) as "mention" | "unread" | undefined,
             alertCount,
         };
-    });
+    });*/
 
     const path = useLocation().pathname;
     const { server: server_id } = useParams<{ server?: string }>();
-    const server = servers.find((x) => x!._id == server_id);
+    // const server = servers.find((x) => x!._id == server_id);
 
     const { openScreen } = useIntermediate();
 
-    let homeUnread: "mention" | "unread" | undefined;
+    /*let homeUnread: "mention" | "unread" | undefined;
     let alertCount = 0;
     for (const x of channels) {
         if (
@@ -221,11 +221,29 @@ export function ServerListSidebar({ unreads, lastOpened }: Props) {
 
     if (alertCount > 0) homeUnread = "mention";
     const homeActive =
-        typeof server === "undefined" && !path.startsWith("/invite");
+        typeof server === "undefined" && !path.startsWith("/invite");*/
+
+    const { servers } = useData(
+        (client) => {
+            const servers = client.servers.toArray().map((server) => {
+                return {
+                    id: server._id,
+                    name: server.name,
+                    unread: undefined,
+                };
+            });
+
+            return {
+                servers,
+            };
+        },
+        [{ key: "servers" }],
+    );
 
     return (
         <ServersBase>
             <ServerList>
+                {/*
                 <ConditionalLink
                     active={homeActive}
                     to={lastOpened.home ? `/channel/${lastOpened.home}` : "/"}>
@@ -247,27 +265,30 @@ export function ServerListSidebar({ unreads, lastOpened }: Props) {
                             </UserHover>
                         </div>
                     </ServerEntry>
-                </ConditionalLink>
+                        </ConditionalLink>*/}
                 <LineDivider />
                 {servers.map((entry) => {
-                    const active = entry!._id === server?._id;
-                    const id = lastOpened[entry!._id];
+                    const active = entry!.id === server_id;
+                    const id = lastOpened[entry!.id];
 
                     return (
                         <ConditionalLink
                             active={active}
-                            to={`/server/${entry!._id}${
+                            to={`/server/${entry!.id}${
                                 id ? `/channel/${id}` : ""
                             }`}>
                             <ServerEntry
                                 active={active}
                                 onContextMenu={attachContextMenu("Menu", {
-                                    server: entry!._id,
+                                    server: entry!.id,
                                 })}>
                                 <Swoosh />
                                 <Tooltip content={entry.name} placement="right">
                                     <Icon size={42} unread={entry.unread}>
-                                        <ServerIcon size={32} target={entry} />
+                                        <ServerIcon
+                                            size={32}
+                                            target={entry.id}
+                                        />
                                     </Icon>
                                 </Tooltip>
                             </ServerEntry>

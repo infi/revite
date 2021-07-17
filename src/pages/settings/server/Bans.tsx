@@ -7,7 +7,7 @@ import { AppContext } from "../../../context/revoltjs/RevoltClient";
 import Tip from "../../../components/ui/Tip";
 
 interface Props {
-    server: Servers.Server;
+    server: string;
 }
 
 export function Bans({ server }: Props) {
@@ -15,7 +15,7 @@ export function Bans({ server }: Props) {
     const [bans, setBans] = useState<Servers.Ban[] | undefined>(undefined);
 
     useEffect(() => {
-        client.servers.fetchBans(server._id).then((bans) => setBans(bans));
+        client.servers.fetchBans(server).then((bans) => setBans(bans));
     }, []);
 
     return (
@@ -26,7 +26,7 @@ export function Bans({ server }: Props) {
                     {x._id.user}: {x.reason ?? "no reason"}{" "}
                     <button
                         onClick={() =>
-                            client.servers.unbanUser(server._id, x._id.user)
+                            client.servers.unbanUser(server, x._id.user)
                         }>
                         unban
                     </button>

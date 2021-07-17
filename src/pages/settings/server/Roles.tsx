@@ -12,6 +12,7 @@ import { useContext, useEffect, useState } from "preact/hooks";
 
 import { useIntermediate } from "../../../context/intermediate/Intermediate";
 import { AppContext } from "../../../context/revoltjs/RevoltClient";
+import { useData } from "../../../context/revoltjs/hooks";
 
 import Button from "../../../components/ui/Button";
 import Checkbox from "../../../components/ui/Checkbox";
@@ -24,17 +25,27 @@ import Tip from "../../../components/ui/Tip";
 import ButtonItem from "../../../components/navigation/items/ButtonItem";
 
 interface Props {
-    server: Servers.Server;
+    server: string;
 }
 
 const I32ToU32 = (arr: number[]) => arr.map((x) => x >>> 0);
 
 // ! FIXME: bad code :)
-export function Roles({ server }: Props) {
+export function Roles({ server: server_id }: Props) {
     const [role, setRole] = useState("default");
     const { openScreen } = useIntermediate();
     const client = useContext(AppContext);
-    const roles = server.roles ?? {};
+    const { roles, default_permissions } = useData(
+        (client) => {
+            const server = client.servers.get(server_id);
+
+            return {
+                roles: server?.roles ?? {},
+                default_permissions: server?.default_permissions ?? [0, 0],
+            };
+        },
+        [{ key: "servers" }],
+    );
 
     if (role !== "default" && typeof roles[role] === "undefined") {
         useEffect(() => setRole("default"));
@@ -43,9 +54,7 @@ export function Roles({ server }: Props) {
 
     function getPermissions(id: string) {
         return I32ToU32(
-            id === "default"
-                ? server.default_permissions
-                : roles[id].permissions,
+            id === "default" ? default_permissions : roles[id].permissions,
         );
     }
 
@@ -70,20 +79,20 @@ export function Roles({ server }: Props) {
 
     const save = () => {
         if (!isEqual(perm, getPermissions(role))) {
-            client.servers.setPermissions(server._id, role, {
+            client.servers.setPermissions(server_id, role, {
                 server: perm[0],
                 channel: perm[1],
             });
         }
 
         if (!isEqual(name, roleName) || !isEqual(colour, roleColour)) {
-            client.servers.editRole(server._id, role, { name, colour });
+            client.servers.editRole(server_id, role, { name, colour });
         }
     };
 
     const deleteRole = () => {
         setRole("default");
-        client.servers.deleteRole(server._id, role);
+        client.servers.deleteRole(server_id, role);
     };
 
     return (
@@ -99,7 +108,7 @@ export function Roles({ server }: Props) {
                             openScreen({
                                 id: "special_input",
                                 type: "create_role",
-                                server: server._id,
+                                server: server_id,
                                 callback: (id) => setRole(id),
                             })
                         }

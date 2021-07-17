@@ -5,7 +5,7 @@ import { Route, useHistory, useParams } from "react-router-dom";
 import { Text } from "preact-i18n";
 
 import RequiresOnline from "../../context/revoltjs/RequiresOnline";
-import { useServer } from "../../context/revoltjs/hooks";
+import { useData } from "../../context/revoltjs/hooks";
 
 import Category from "../../components/ui/Category";
 
@@ -17,16 +17,19 @@ import { Overview } from "./server/Overview";
 import { Roles } from "./server/Roles";
 
 export default function ServerSettings() {
-    const { server: sid } = useParams<{ server: string }>();
-    const server = useServer(sid);
-    if (!server) return null;
+    const { server } = useParams<{ server: string }>();
+    const name = useData(
+        (client) => client.servers.get(server)?.name,
+        [{ key: "servers" }],
+    );
+    if (!name) return null;
 
     const history = useHistory();
     function switchPage(to?: string) {
         if (to) {
-            history.replace(`/server/${sid}/settings/${to}`);
+            history.replace(`/server/${server}/settings/${to}`);
         } else {
-            history.replace(`/server/${sid}/settings`);
+            history.replace(`/server/${server}/settings`);
         }
     }
 
@@ -34,7 +37,7 @@ export default function ServerSettings() {
         <GenericSettings
             pages={[
                 {
-                    category: <Category variant="uniform" text={server.name} />, //TOFIX: Just add the server.name as a string, otherwise it makes a duplicate category
+                    category: <Category variant="uniform" text={name} />,
                     id: "overview",
                     icon: <ListUl size={20} />,
                     title: (

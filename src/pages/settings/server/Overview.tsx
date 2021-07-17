@@ -9,6 +9,7 @@ import TextAreaAutoSize from "../../../lib/TextAreaAutoSize";
 
 import { FileUploader } from "../../../context/revoltjs/FileUploads";
 import { AppContext } from "../../../context/revoltjs/RevoltClient";
+import { useData } from "../../../context/revoltjs/hooks";
 import { useChannelName } from "../../../context/revoltjs/util";
 
 import Button from "../../../components/ui/Button";
@@ -16,11 +17,35 @@ import ComboBox from "../../../components/ui/ComboBox";
 import InputBox from "../../../components/ui/InputBox";
 
 interface Props {
-    server: Servers.Server;
+    server: string;
 }
 
-export function Overview({ server }: Props) {
+export function Overview({ server: server_id }: Props) {
     const client = useContext(AppContext);
+    const { server, iconURL, bannerURL } = useData(
+        (client) => {
+            const server = client.servers.get(server_id)!;
+            return {
+                server: {
+                    name: server.name,
+                    description: server.description,
+                    system_messages: server.system_messages,
+                    channels: server.channels,
+                },
+                iconURL: client.servers.getIconURL(
+                    server_id,
+                    { max_side: 256 },
+                    true,
+                ),
+                bannerURL: client.servers.getBannerURL(
+                    server_id,
+                    { width: 1000 },
+                    true,
+                ),
+            };
+        },
+        [{ key: "servers" }],
+    );
 
     const [name, setName] = useState(server.name);
     const [description, setDescription] = useState(server.description ?? "");
@@ -49,7 +74,7 @@ export function Overview({ server }: Props) {
         if (!isEqual(systemMessages, server.system_messages))
             changes.system_messages = systemMessages;
 
-        client.servers.edit(server._id, changes);
+        client.servers.edit(server_id, changes);
         setChanged(false);
     }
 
@@ -64,15 +89,11 @@ export function Overview({ server }: Props) {
                     behaviour="upload"
                     maxFileSize={2_500_000}
                     onUpload={(icon) =>
-                        client.servers.edit(server._id, { icon })
+                        client.servers.edit(server_id, { icon })
                     }
-                    previewURL={client.servers.getIconURL(
-                        server._id,
-                        { max_side: 256 },
-                        true,
-                    )}
+                    previewURL={iconURL}
                     remove={() =>
-                        client.servers.edit(server._id, { remove: "Icon" })
+                        client.servers.edit(server_id, { remove: "Icon" })
                     }
                 />
                 <div className={styles.name}>
@@ -116,15 +137,11 @@ export function Overview({ server }: Props) {
                 behaviour="upload"
                 maxFileSize={6_000_000}
                 onUpload={(banner) =>
-                    client.servers.edit(server._id, { banner })
+                    client.servers.edit(server_id, { banner })
                 }
-                previewURL={client.servers.getBannerURL(
-                    server._id,
-                    { width: 1000 },
-                    true,
-                )}
+                previewURL={bannerURL}
                 remove={() =>
-                    client.servers.edit(server._id, { remove: "Banner" })
+                    client.servers.edit(server_id, { remove: "Banner" })
                 }
             />
 

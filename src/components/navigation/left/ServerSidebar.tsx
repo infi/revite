@@ -14,8 +14,8 @@ import { Unreads } from "../../../redux/reducers/unreads";
 
 import {
     useChannels,
+    useData,
     useForceUpdate,
-    useServer,
 } from "../../../context/revoltjs/hooks";
 
 import CollapsibleSection from "../../common/CollapsibleSection";
@@ -55,10 +55,21 @@ const ServerList = styled.div`
 
 function ServerSidebar(props: Props) {
     const { server: server_id, channel: channel_id } =
-        useParams<{ server?: string; channel?: string }>();
+        useParams<{ server: string; channel?: string }>();
     const ctx = useForceUpdate();
 
-    const server = useServer(server_id, ctx);
+    const server = useData(
+        (client) => {
+            const server = client.servers.get(server_id);
+            if (!server) return;
+
+            return {
+                channels: server.channels,
+                categories: server.categories,
+            };
+        },
+        [{ key: "servers" }],
+    );
     if (!server) return <Redirect to="/" />;
 
     const channels = (
@@ -94,7 +105,7 @@ function ServerSidebar(props: Props) {
             <ConditionalLink
                 key={entry._id}
                 active={active}
-                to={`/server/${server!._id}/channel/${entry._id}`}>
+                to={`/server/${server_id}/channel/${entry._id}`}>
                 <ChannelButton
                     channel={entry}
                     active={active}
@@ -130,11 +141,11 @@ function ServerSidebar(props: Props) {
 
     return (
         <ServerBase>
-            <ServerHeader server={server} ctx={ctx} />
+            <ServerHeader server={server_id} ctx={ctx} />
             <ConnectionStatus />
             <ServerList
                 onContextMenu={attachContextMenu("Menu", {
-                    server_list: server._id,
+                    server_list: server_id,
                 })}>
                 {elements}
             </ServerList>

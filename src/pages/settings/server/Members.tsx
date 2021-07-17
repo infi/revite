@@ -7,7 +7,7 @@ import { AppContext } from "../../../context/revoltjs/RevoltClient";
 import { useData } from "../../../context/revoltjs/hooks";
 
 interface Props {
-    server: Servers.Server;
+    server: string;
 }
 
 // ! FIXME: bad code :)
@@ -35,7 +35,7 @@ export function Members({ server }: Props) {
 
     useEffect(() => {
         client.servers.members
-            .fetchMembers(server._id)
+            .fetchMembers(server)
             .then((members) => setMembers(members));
     }, []);
 
