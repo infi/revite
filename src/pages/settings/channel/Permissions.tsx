@@ -4,7 +4,7 @@ import { ChannelPermission } from "revolt.js/dist/api/permissions";
 import { useContext, useEffect, useState } from "preact/hooks";
 
 import { AppContext } from "../../../context/revoltjs/RevoltClient";
-import { useServer } from "../../../context/revoltjs/hooks";
+import { useData } from "../../../context/revoltjs/hooks";
 
 import Button from "../../../components/ui/Button";
 import Checkbox from "../../../components/ui/Checkbox";
@@ -35,12 +35,15 @@ export default function Permissions({ channel }: Props) {
     type R = { name: string; permissions: number };
     const roles: { [key: string]: R } = {};
     if (channel.channel_type !== "Group") {
-        const server = useServer(channel.server);
-        const a = server?.roles ?? {};
-        for (const b of Object.keys(a)) {
+        const serverRoles = useData(
+            (client) => client.servers.get(channel.server)?.roles ?? {},
+            [{ key: "servers" }],
+        );
+
+        for (const b of Object.keys(serverRoles)) {
             roles[b] = {
-                name: a[b].name,
-                permissions: a[b].permissions[1],
+                name: serverRoles[b].name,
+                permissions: serverRoles[b].permissions[1],
             };
         }
     }
@@ -54,6 +57,7 @@ export default function Permissions({ channel }: Props) {
                 ? channel.permissions
                 : channel.default_permissions) ?? DEFAULT_PERMISSION_DM,
     };
+
     const selectedRole = selected === "default" ? defaultRole : roles[selected];
 
     if (!selectedRole) {

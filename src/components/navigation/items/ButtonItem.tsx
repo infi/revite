@@ -58,7 +58,7 @@ export function UserButton(props: UserProps) {
             })}>
             <UserIcon
                 className={styles.avatar}
-                target={user}
+                target={user._id}
                 size={32}
                 status
             />
@@ -69,7 +69,7 @@ export function UserButton(props: UserProps) {
                         {channel?.last_message && alert ? (
                             channel.last_message.short
                         ) : (
-                            <UserStatus user={user} />
+                            <UserStatus user_id={user._id} />
                         )}
                     </div>
                 }

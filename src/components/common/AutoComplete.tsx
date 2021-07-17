@@ -444,7 +444,11 @@ export default function AutoComplete({
                                 })
                             }
                             onClick={onClick}>
-                            <UserIcon size={24} target={match} status={true} />
+                            <UserIcon
+                                size={24}
+                                target={match._id}
+                                status={true}
+                            />
                             {match.username}
                         </button>
                     ))}

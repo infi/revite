@@ -141,7 +141,7 @@ export function UserProfile({ user_id, onClose, dummy, dummyProfile }: Props) {
                         `linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ), url('${backgroundURL}')`,
                 }}>
                 <div className={styles.profile}>
-                    <UserIcon size={80} target={user} status animate />
+                    <UserIcon size={80} target={user._id} status animate />
                     <div className={styles.details}>
                         <Localizer>
                             <span
@@ -152,7 +152,7 @@ export function UserProfile({ user_id, onClose, dummy, dummyProfile }: Props) {
                         </Localizer>
                         {user.status?.text && (
                             <span className={styles.status}>
-                                <UserStatus user={user} tooltip />
+                                <UserStatus user_id={user._id} tooltip />
                             </span>
                         )}
                     </div>
@@ -314,7 +314,7 @@ export function UserProfile({ user_id, onClose, dummy, dummyProfile }: Props) {
                                                 key={x._id}>
                                                 <UserIcon
                                                     size={32}
-                                                    target={x}
+                                                    target={x._id}
                                                 />
                                                 <span>{x.username}</span>
                                             </div>

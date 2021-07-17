@@ -67,7 +67,7 @@ export default function UserHeader({ user }: Props) {
                 <span
                     className="status"
                     onClick={() => openContextMenu("Status")}>
-                    <UserStatus user={user} />
+                    <UserStatus user_id={user._id} />
                 </span>
             </HeaderBase>
             {!isTouchscreenDevice && (

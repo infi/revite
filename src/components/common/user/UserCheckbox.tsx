@@ -9,7 +9,7 @@ type UserProps = Omit<CheckboxProps, "children"> & { user: User };
 export default function UserCheckbox({ user, ...props }: UserProps) {
     return (
         <Checkbox {...props}>
-            <UserIcon target={user} size={32} />
+            <UserIcon target={user._id} size={32} />
             {user.username}
         </Checkbox>
     );

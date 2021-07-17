@@ -37,7 +37,7 @@ export function Friend({ user }: Props) {
     let subtext: Children = null;
 
     if (user.relationship === Users.Relationship.Friend) {
-        subtext = <UserStatus user={user} />;
+        subtext = <UserStatus user_id={user._id} />;
         actions.push(
             <>
                 <IconButton
@@ -125,7 +125,7 @@ export function Friend({ user }: Props) {
             className={styles.friend}
             onClick={() => openScreen({ id: "profile", user_id: user._id })}
             onContextMenu={attachContextMenu("Menu", { user: user._id })}>
-            <UserIcon target={user} size={36} status />
+            <UserIcon target={user._id} size={36} status />
             <div className={styles.name}>
                 <span>{user.username}</span>
                 {subtext && <span className={styles.subtext}>{subtext}</span>}

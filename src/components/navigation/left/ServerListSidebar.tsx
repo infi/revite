@@ -17,7 +17,6 @@ import { useIntermediate } from "../../../context/intermediate/Intermediate";
 import {
     useChannels,
     useForceUpdate,
-    useSelf,
     useServers,
 } from "../../../context/revoltjs/hooks";
 
@@ -172,7 +171,6 @@ interface Props {
 
 export function ServerListSidebar({ unreads, lastOpened }: Props) {
     const ctx = useForceUpdate();
-    const self = useSelf(ctx);
     const activeServers = useServers(undefined, ctx) as Servers.Server[];
     const channels = (useChannels(undefined, ctx) as Channel[]).map((x) =>
         mapChannelWithUnread(x, unreads),
@@ -238,10 +236,10 @@ export function ServerListSidebar({ unreads, lastOpened }: Props) {
                             onClick={() =>
                                 homeActive && openContextMenu("Status")
                             }>
-                            <UserHover user={self}>
+                            <UserHover user={ctx.client.user!._id}>
                                 <Icon size={42} unread={homeUnread}>
                                     <UserIcon
-                                        target={self}
+                                        target={ctx.client.user!._id}
                                         size={32}
                                         status
                                     />

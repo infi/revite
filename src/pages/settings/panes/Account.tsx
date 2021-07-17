@@ -11,8 +11,9 @@ import { useIntermediate } from "../../../context/intermediate/Intermediate";
 import {
     ClientStatus,
     StatusContext,
+    useClient,
 } from "../../../context/revoltjs/RevoltClient";
-import { useForceUpdate, useSelf } from "../../../context/revoltjs/hooks";
+import { useData } from "../../../context/revoltjs/hooks";
 
 import Tooltip from "../../../components/common/Tooltip";
 import UserIcon from "../../../components/common/user/UserIcon";
@@ -24,9 +25,11 @@ export function Account() {
     const { openScreen, writeClipboard } = useIntermediate();
     const status = useContext(StatusContext);
 
-    const ctx = useForceUpdate();
-    const user = useSelf(ctx);
-    if (!user) return null;
+    const client = useClient();
+    const username = useData(
+        (client) => client.user!.username,
+        [{ key: "users" }],
+    );
 
     const [email, setEmail] = useState("...");
     const [revealEmail, setRevealEmail] = useState(false);
@@ -41,29 +44,30 @@ export function Account() {
 
     useEffect(() => {
         if (email === "..." && status === ClientStatus.ONLINE) {
-            ctx.client
+            client
                 .req("GET", "/auth/user")
                 .then((account) => setEmail(account.email));
         }
 
         if (profile === undefined && status === ClientStatus.ONLINE) {
-            ctx.client.users
-                .fetchProfile(user._id)
+            client.users
+                .fetchProfile(client.user!._id)
                 .then((profile) => setProfile(profile ?? {}));
         }
     }, [status]);
 
+    // ! HOOKS
     return (
         <div className={styles.user}>
             <div className={styles.banner}>
-                <UserIcon
+                {/*<UserIcon
                     className={styles.avatar}
                     target={user}
                     size={72}
                     onClick={() => switchPage("profile")}
-                />
+                />*/}
                 <div className={styles.userDetail}>
-                    <div className={styles.username}>@{user.username}</div>
+                    <div className={styles.username}>@{username}</div>
                     <div className={styles.userid}>
                         <Tooltip
                             content={
@@ -72,8 +76,8 @@ export function Account() {
                             <HelpCircle size={16} />
                         </Tooltip>
                         <Tooltip content={<Text id="app.special.copy" />}>
-                            <a onClick={() => writeClipboard(user._id)}>
-                                {user._id}
+                            <a onClick={() => writeClipboard(client.user!._id)}>
+                                {client.user!._id}
                             </a>
                         </Tooltip>
                     </div>
@@ -82,7 +86,7 @@ export function Account() {
             <div className={styles.details}>
                 {(
                     [
-                        ["username", user.username, <At size={24} />],
+                        ["username", username, <At size={24} />],
                         ["email", email, <Envelope size={24} />],
                         ["password", "***********", <Key size={24} />],
                     ] as const

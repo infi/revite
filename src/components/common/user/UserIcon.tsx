@@ -6,28 +6,16 @@ import styled, { css } from "styled-components";
 import { useContext } from "preact/hooks";
 
 import { ThemeContext } from "../../../context/Theme";
-import { AppContext } from "../../../context/revoltjs/RevoltClient";
+import { useData } from "../../../context/revoltjs/hooks";
 
 import IconBase, { IconBaseProps } from "../IconBase";
 import fallback from "../assets/user.png";
 
 type VoiceStatus = "muted";
-interface Props extends IconBaseProps<User> {
+interface Props extends IconBaseProps<string> {
     mask?: string;
     status?: boolean;
     voice?: VoiceStatus;
-}
-
-export function useStatusColour(user?: User) {
-    const theme = useContext(ThemeContext);
-
-    return user?.online && user?.status?.presence !== Users.Presence.Invisible
-        ? user?.status?.presence === Users.Presence.Idle
-            ? theme["status-away"]
-            : user?.status?.presence === Users.Presence.Busy
-            ? theme["status-busy"]
-            : theme["status-online"]
-        : theme["status-invisible"];
 }
 
 const VoiceIndicator = styled.div<{ status: VoiceStatus }>`
@@ -53,8 +41,6 @@ const VoiceIndicator = styled.div<{ status: VoiceStatus }>`
 export default function UserIcon(
     props: Props & Omit<JSX.SVGAttributes<SVGSVGElement>, keyof Props>,
 ) {
-    const client = useContext(AppContext);
-
     const {
         target,
         attachment,
@@ -67,12 +53,37 @@ export default function UserIcon(
         as,
         ...svgProps
     } = props;
-    const iconURL =
-        client.generateFileURL(
-            target?.avatar ?? attachment,
-            { max_side: 256 },
-            animate,
-        ) ?? (target ? client.users.getDefaultAvatarURL(target._id) : fallback);
+
+    const theme = useContext(ThemeContext);
+    const { iconURL, statusFill } = useData(
+        (client) => {
+            const user = target ? client.users.get(target) : undefined;
+
+            return {
+                iconURL:
+                    client.generateFileURL(
+                        user?.avatar ?? attachment,
+                        { max_side: 256 },
+                        animate,
+                    ) ??
+                    (target
+                        ? client.users.getDefaultAvatarURL(target)
+                        : fallback),
+                statusFill: status
+                    ? user?.online &&
+                      user?.status?.presence !== Users.Presence.Invisible
+                        ? user?.status?.presence === Users.Presence.Idle
+                            ? theme["status-away"]
+                            : user?.status?.presence === Users.Presence.Busy
+                            ? theme["status-busy"]
+                            : theme["status-online"]
+                        : theme["status-invisible"]
+                    : undefined,
+            };
+        },
+        [{ key: "users" }],
+        [animate, target, attachment, status],
+    );
 
     return (
         <IconBase
@@ -89,9 +100,7 @@ export default function UserIcon(
                 mask={mask ?? (status ? "url(#user)" : undefined)}>
                 {<img src={iconURL} draggable={false} loading="lazy" />}
             </foreignObject>
-            {props.status && (
-                <circle cx="27" cy="27" r="5" fill={useStatusColour(target)} />
-            )}
+            {props.status && <circle cx="27" cy="27" r="5" fill={statusFill} />}
             {props.voice && (
                 <foreignObject x="22" y="22" width="10" height="10">
                     <VoiceIndicator status={props.voice}>

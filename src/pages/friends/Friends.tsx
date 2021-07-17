@@ -146,7 +146,7 @@ export default function Friends() {
                                 (x, i) =>
                                     i < 3 && (
                                         <UserIcon
-                                            target={x}
+                                            target={x._id}
                                             size={64}
                                             mask={
                                                 i <

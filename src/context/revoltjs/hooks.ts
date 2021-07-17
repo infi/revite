@@ -3,12 +3,65 @@ import { Client, PermissionCalculator } from "revolt.js";
 import { Channels, Servers, Users } from "revolt.js/dist/api/objects";
 import Collection from "revolt.js/dist/maps/Collection";
 
-import { useCallback, useContext, useEffect, useState } from "preact/hooks";
+import { Inputs, useContext, useEffect, useState } from "preact/hooks";
+
+import { AppContext, useClient } from "./RevoltClient";
+
+type PickProperties<T, U> = Pick<
+    T,
+    {
+        [K in keyof T]: T[K] extends U ? K : never;
+    }[keyof T]
+>;
+
+type CollectionKeys = Exclude<
+    keyof PickProperties<Client, Collection<any>>,
+    undefined
+>;
+
+interface Depedency {
+    key: CollectionKeys;
+    id?: string;
+}
+
+export function useData<T>(
+    cb: (client: Client) => T,
+    dependencies: Depedency[],
+    inputs?: Inputs,
+): T {
+    // ! FIXME: not sure if this may cost a lot
+    const client = useClient();
+    const [data, setData] = useState(cb(client));
+
+    function updateData(v: T) {
+        if (!isEqual(data, v)) {
+            setData(v);
+        }
+    }
+
+    useEffect(() => {
+        let fns = dependencies.map((dependency) => {
+            function update() {
+                updateData(cb(client));
+            }
+
+            client[dependency.key].addListener("update", update);
+            return () =>
+                client[dependency.key].removeListener("update", update);
+        });
+
+        return () => fns.forEach((x) => x());
+    }, [data]);
+
+    if (inputs) {
+        useEffect(() => updateData(cb(client)), inputs);
+    }
+
+    return data;
+}
 
 //#region Hooks v1
 // ! Hooks v1 will be deprecated soon.
-import { AppContext } from "./RevoltClient";
-
 export interface HookContext {
     client: Client;
     forceUpdate: () => void;
@@ -31,23 +84,8 @@ export function useForceUpdate(context?: HookContext): HookContext {
     return { client, forceUpdate: () => updateState(Math.random()) };
 }
 
-// TODO: utils.d.ts maybe?
-type PickProperties<T, U> = Pick<
-    T,
-    {
-        [K in keyof T]: T[K] extends U ? K : never;
-    }[keyof T]
->;
-
-// The keys in Client that are an object
-// for some reason undefined keeps appearing despite there being no reason to so it's filtered out
-type ClientCollectionKey = Exclude<
-    keyof PickProperties<Client, Collection<any>>,
-    undefined
->;
-
 function useObject(
-    type: ClientCollectionKey,
+    type: CollectionKeys,
     id?: string | string[],
     context?: HookContext,
 ) {
@@ -81,11 +119,6 @@ function useObject(
 export function useUser(id?: string, context?: HookContext) {
     if (typeof id === "undefined") return;
     return useObject("users", id, context) as Readonly<Users.User> | undefined;
-}
-
-export function useSelf(context?: HookContext) {
-    const ctx = useForceUpdate(context);
-    return useUser(ctx.client.user!._id, ctx);
 }
 
 export function useUsers(ids?: string[], context?: HookContext) {
@@ -232,45 +265,5 @@ export function useServerPermission(id: string, context?: HookContext) {
 
     const calculator = new PermissionCalculator(ctx.client);
     return calculator.forServer(id);
-}
-//#endregion
-
-//#region Hooks v2
-type CollectionKeys = Exclude<
-    keyof PickProperties<Client, Collection<any>>,
-    undefined
->;
-
-interface Depedency {
-    key: CollectionKeys;
-    id?: string;
-}
-
-export function useData<T>(
-    cb: (client: Client) => T,
-    dependencies: Depedency[],
-): T {
-    // ! FIXME: not sure if this may cost a lot
-    const client = useContext(AppContext);
-    const [data, setData] = useState(cb(client));
-
-    useEffect(() => {
-        let fns = dependencies.map((dependency) => {
-            function update() {
-                let generated = cb(client);
-                if (!isEqual(data, generated)) {
-                    setData(generated);
-                }
-            }
-
-            client[dependency.key].addListener("update", update);
-            return () =>
-                client[dependency.key].removeListener("update", update);
-        });
-
-        return () => fns.forEach((x) => x());
-    }, [data]);
-
-    return data;
 }
 //#endregion

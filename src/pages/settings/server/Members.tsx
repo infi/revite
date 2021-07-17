@@ -1,9 +1,10 @@
 import { Servers } from "revolt.js/dist/api/objects";
 
 import styles from "./Panes.module.scss";
-import { useEffect, useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 
-import { useForceUpdate, useUsers } from "../../../context/revoltjs/hooks";
+import { AppContext } from "../../../context/revoltjs/RevoltClient";
+import { useData } from "../../../context/revoltjs/hooks";
 
 interface Props {
     server: Servers.Server;
@@ -11,15 +12,29 @@ interface Props {
 
 // ! FIXME: bad code :)
 export function Members({ server }: Props) {
+    const client = useContext(AppContext);
     const [members, setMembers] = useState<Servers.Member[] | undefined>(
         undefined,
     );
 
-    const ctx = useForceUpdate();
-    const users = useUsers(members?.map((x) => x._id.user) ?? [], ctx);
+    const users = useData(
+        (client) => {
+            if (!members) return [];
+
+            return client.users
+                .mapKeys(members.map((x) => x._id.user))
+                .filter((x) => typeof x !== "undefined")
+                .map((x) => {
+                    return {
+                        username: x!.username,
+                    };
+                });
+        },
+        [{ key: "users" }],
+    );
 
     useEffect(() => {
-        ctx.client.servers.members
+        client.servers.members
             .fetchMembers(server._id)
             .then((members) => setMembers(members));
     }, []);

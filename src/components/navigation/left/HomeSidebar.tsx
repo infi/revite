@@ -162,6 +162,7 @@ function HomeSidebar(props: Props) {
 
                     return (
                         <ConditionalLink
+                            key={x._id}
                             active={x._id === channel}
                             to={`/channel/${x._id}`}>
                             <ChannelButton

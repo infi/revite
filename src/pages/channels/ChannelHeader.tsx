@@ -11,7 +11,6 @@ import { useIntermediate } from "../../context/intermediate/Intermediate";
 import { AppContext } from "../../context/revoltjs/RevoltClient";
 import { getChannelName } from "../../context/revoltjs/util";
 
-import { useStatusColour } from "../../components/common/user/UserIcon";
 import UserStatus from "../../components/common/user/UserStatus";
 import Header from "../../components/ui/Header";
 
@@ -106,15 +105,15 @@ export default function ChannelHeader({
                         <>
                             <div className="divider" />
                             <span className="desc">
-                                <div
+                                {/* ! HOOKS <div
                                     className="status"
                                     style={{
                                         backgroundColor: useStatusColour(
                                             recipient as User,
                                         ),
                                     }}
-                                />
-                                <UserStatus user={recipient as User} />
+                                />*/}
+                                <UserStatus user_id={recipient?._id} />
                             </span>
                         </>
                     )}

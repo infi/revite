@@ -894,7 +894,7 @@ function ContextMenus(props: Props) {
                                     onClick={() =>
                                         contextClick({ action: "set_status" })
                                     }>
-                                    <UserStatus user={client.user!} />
+                                    <UserStatus user_id={client.user!._id} />
                                 </div>
                             </div>
                             <IconButton>

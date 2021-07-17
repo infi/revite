@@ -9,11 +9,7 @@ import {
     VoiceOperationsContext,
     VoiceStatus,
 } from "../../../context/Voice";
-import {
-    useForceUpdate,
-    useSelf,
-    useUsers,
-} from "../../../context/revoltjs/hooks";
+import { useForceUpdate, useUsers } from "../../../context/revoltjs/hooks";
 
 import UserIcon from "../../../components/common/user/UserIcon";
 import Button from "../../../components/ui/Button";
@@ -78,7 +74,6 @@ export default function VoiceHeader({ id }: Props) {
         useContext(VoiceOperationsContext);
 
     const ctx = useForceUpdate();
-    const self = useSelf(ctx);
     const keys = participants ? Array.from(participants.keys()) : undefined;
     const users = keys ? useUsers(keys, ctx) : undefined;
 
@@ -92,7 +87,7 @@ export default function VoiceHeader({ id }: Props) {
                               <div key={id}>
                                   <UserIcon
                                       size={80}
-                                      target={user}
+                                      target={user!._id}
                                       status={false}
                                       voice={
                                           participants!.get(id)?.audio
@@ -104,12 +99,14 @@ export default function VoiceHeader({ id }: Props) {
                           );
                       })
                     : self !== undefined && (
-                          <div key={self._id} className="disconnected">
-                              <UserIcon
+                          <div
+                              key={ctx.client.user!._id}
+                              className="disconnected">
+                              {/* ! HOOKS <UserIcon
                                   size={80}
                                   target={self}
                                   status={false}
-                              />
+                              />*/}
                           </div>
                       )}
             </div>

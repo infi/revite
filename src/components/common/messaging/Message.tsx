@@ -65,6 +65,8 @@ function Message({
         openScreen({ id: "profile", user_id: message.author });
 
     // ! FIXME: animate on hover
+    const messageHead =
+        head && !(message.replies && message.replies.length > 0);
     const [animate, setAnimate] = useState(false);
 
     return (
@@ -78,7 +80,7 @@ function Message({
             ))}
             <MessageBase
                 highlight={highlight}
-                head={head && !(message.replies && message.replies.length > 0)}
+                head={messageHead}
                 contrast={contrast}
                 sending={typeof queued !== "undefined"}
                 mention={message.mentions?.includes(client.user!._id)}
@@ -92,12 +94,12 @@ function Message({
                           })
                         : undefined
                 }
-                onMouseEnter={() => setAnimate(true)}
-                onMouseLeave={() => setAnimate(false)}>
+                onMouseEnter={() => messageHead && setAnimate(true)}
+                onMouseLeave={() => messageHead && setAnimate(false)}>
                 <MessageInfo>
                     {head ? (
                         <UserIcon
-                            target={user}
+                            target={user!._id}
                             size={36}
                             onContextMenu={userContext}
                             onClick={openProfile}
@@ -112,7 +114,7 @@ function Message({
                         <span className="detail">
                             <Username
                                 className="author"
-                                user={user}
+                                username={user?.username}
                                 onContextMenu={userContext}
                                 onClick={openProfile}
                             />
