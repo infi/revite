@@ -9,7 +9,7 @@ import { isTouchscreenDevice } from "../../lib/isTouchscreenDevice";
 
 import { useIntermediate } from "../../context/intermediate/Intermediate";
 import { AppContext } from "../../context/revoltjs/RevoltClient";
-import { getChannelName } from "../../context/revoltjs/util";
+import { useChannelName } from "../../context/revoltjs/util";
 
 import UserStatus from "../../components/common/user/UserStatus";
 import Header from "../../components/ui/Header";
@@ -71,7 +71,7 @@ export default function ChannelHeader({
     const { openScreen } = useIntermediate();
     const client = useContext(AppContext);
 
-    const name = getChannelName(client, channel);
+    const name = useChannelName(channel._id);
     let icon, recipient;
     switch (channel.channel_type) {
         case "SavedMessages":

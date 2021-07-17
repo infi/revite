@@ -1,6 +1,6 @@
 import { At } from "@styled-icons/boxicons-regular";
 import { Envelope, Key, HelpCircle } from "@styled-icons/boxicons-solid";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Users } from "revolt.js/dist/api/objects";
 
 import styles from "./Panes.module.scss";
@@ -18,7 +18,6 @@ import { useData } from "../../../context/revoltjs/hooks";
 import Tooltip from "../../../components/common/Tooltip";
 import UserIcon from "../../../components/common/user/UserIcon";
 import Button from "../../../components/ui/Button";
-import Overline from "../../../components/ui/Overline";
 import Tip from "../../../components/ui/Tip";
 
 export function Account() {
@@ -56,16 +55,15 @@ export function Account() {
         }
     }, [status]);
 
-    // ! HOOKS
     return (
         <div className={styles.user}>
             <div className={styles.banner}>
-                {/*<UserIcon
+                <UserIcon
                     className={styles.avatar}
-                    target={user}
+                    target={client.user!._id}
                     size={72}
                     onClick={() => switchPage("profile")}
-                />*/}
+                />
                 <div className={styles.userDetail}>
                     <div className={styles.username}>@{username}</div>
                     <div className={styles.userid}>

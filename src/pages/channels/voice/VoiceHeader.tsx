@@ -102,11 +102,11 @@ export default function VoiceHeader({ id }: Props) {
                           <div
                               key={ctx.client.user?._id}
                               className="disconnected">
-                              {/* ! HOOKS <UserIcon
+                              <UserIcon
                                   size={80}
-                                  target={self}
+                                  target={ctx.client.user?._id}
                                   status={false}
-                              />*/}
+                              />
                           </div>
                       )}
             </div>

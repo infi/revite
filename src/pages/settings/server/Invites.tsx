@@ -10,7 +10,7 @@ import { useContext, useEffect, useState } from "preact/hooks";
 
 import { AppContext } from "../../../context/revoltjs/RevoltClient";
 import { useData } from "../../../context/revoltjs/hooks";
-import { getChannelName } from "../../../context/revoltjs/util";
+import { useChannelName } from "../../../context/revoltjs/util";
 
 import UserIcon from "../../../components/common/user/UserIcon";
 import IconButton from "../../../components/ui/IconButton";
@@ -93,14 +93,14 @@ export function Invites({ server }: Props) {
                         data-deleting={deleting.indexOf(invite._id) > -1}>
                         <code>{invite._id}</code>
                         <span>
-                            {/*<UserIcon target={creator} size={24} />{" "}*/}
+                            <UserIcon target={creator?.id} size={24} />{" "}
                             {creator?.username ?? "unknown"}
                         </span>
                         <span>
                             {channel?.name}
-                            {/*channel && creator
-                                ? getChannelName(ctx.client, channel, true)
-                                : "#unknown"*/}
+                            {channel && creator
+                                ? useChannelName(channel.id, true)
+                                : "#unknown"}
                         </span>
                         <IconButton
                             onClick={async () => {

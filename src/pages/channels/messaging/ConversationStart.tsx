@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Text } from "preact-i18n";
 
 import { useChannel, useForceUpdate } from "../../../context/revoltjs/hooks";
-import { getChannelName } from "../../../context/revoltjs/util";
+import { useChannelName } from "../../../context/revoltjs/util";
 
 const StartBase = styled.div`
     margin: 18px 16px 10px 16px;
@@ -25,13 +25,9 @@ interface Props {
 }
 
 export default function ConversationStart({ id }: Props) {
-    const ctx = useForceUpdate();
-    const channel = useChannel(id, ctx);
-    if (!channel) return null;
-
     return (
         <StartBase>
-            <h1>{getChannelName(ctx.client, channel, true)}</h1>
+            <h1>{useChannelName(id, true)}</h1>
             <h4>
                 <Text id="app.main.channel.start.group" />
             </h4>

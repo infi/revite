@@ -54,7 +54,12 @@ export function useData<T>(
     }, [data]);
 
     if (inputs) {
-        useEffect(() => updateData(cb(client)), inputs);
+        var r = false;
+        useEffect(() => {
+            if (!r) return;
+            updateData(cb(client));
+            r = true;
+        }, inputs);
     }
 
     return data;

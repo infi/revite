@@ -9,7 +9,7 @@ import TextAreaAutoSize from "../../../lib/TextAreaAutoSize";
 
 import { FileUploader } from "../../../context/revoltjs/FileUploads";
 import { AppContext } from "../../../context/revoltjs/RevoltClient";
-import { getChannelName } from "../../../context/revoltjs/util";
+import { useChannelName } from "../../../context/revoltjs/util";
 
 import Button from "../../../components/ui/Button";
 import ComboBox from "../../../components/ui/ComboBox";
@@ -171,11 +171,9 @@ export function Overview({ server }: Props) {
                             <Text id="general.disabled" />
                         </option>
                         {server.channels.map((id) => {
-                            const channel = client.channels.get(id);
-                            if (!channel) return null;
                             return (
                                 <option value={id}>
-                                    {getChannelName(client, channel, true)}
+                                    {useChannelName(id, true)}
                                 </option>
                             );
                         })}

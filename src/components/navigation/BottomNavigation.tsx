@@ -8,6 +8,8 @@ import ConditionalLink from "../../lib/ConditionalLink";
 import { connectState } from "../../redux/connector";
 import { LastOpened } from "../../redux/reducers/last_opened";
 
+import { useClient } from "../../context/revoltjs/RevoltClient";
+
 import UserIcon from "../common/user/UserIcon";
 import IconButton from "../ui/IconButton";
 
@@ -50,6 +52,7 @@ interface Props {
 }
 
 export function BottomNavigation({ lastOpened }: Props) {
+    const client = useClient();
     const history = useHistory();
     const path = useLocation().pathname;
 
@@ -104,8 +107,11 @@ export function BottomNavigation({ lastOpened }: Props) {
                 <Button active={settingsActive}>
                     <ConditionalLink active={settingsActive} to="/settings">
                         <IconButton>
-                            {/** ! HOOKS */}
-                            {/*<UserIcon target={user} size={26} status={true} />*/}
+                            <UserIcon
+                                target={client.user!._id}
+                                size={26}
+                                status={true}
+                            />
                         </IconButton>
                     </ConditionalLink>
                 </Button>

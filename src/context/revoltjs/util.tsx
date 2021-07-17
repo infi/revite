@@ -4,6 +4,7 @@ import { Channel, Message, User } from "revolt.js/dist/api/objects";
 import { Text } from "preact-i18n";
 
 import { Children } from "../../types/Preact";
+import { useData } from "./hooks";
 
 export function takeError(error: any): string {
     const type = error?.response?.data?.type;
@@ -22,29 +23,36 @@ export function takeError(error: any): string {
     return id;
 }
 
-export function getChannelName(
-    client: Client,
-    channel: Channel,
+export function useChannelName(
+    channel_id: string,
     prefixType?: boolean,
 ): Children {
-    if (channel.channel_type === "SavedMessages")
-        return <Text id="app.navigation.tabs.saved" />;
+    return useData(
+        (client) => {
+            const channel = client.channels.get(channel_id);
+            if (!channel) return null;
 
-    if (channel.channel_type === "DirectMessage") {
-        const uid = client.channels.getRecipient(channel._id);
-        return (
-            <>
-                {prefixType && "@"}
-                {client.users.get(uid)?.username}
-            </>
-        );
-    }
+            if (channel.channel_type === "SavedMessages")
+                return <Text id="app.navigation.tabs.saved" />;
 
-    if (channel.channel_type === "TextChannel" && prefixType) {
-        return <>#{channel.name}</>;
-    }
+            if (channel.channel_type === "DirectMessage") {
+                const uid = client.channels.getRecipient(channel._id);
+                return (
+                    <>
+                        {prefixType && "@"}
+                        {client.users.get(uid)?.username}
+                    </>
+                );
+            }
 
-    return <>{channel.name}</>;
+            if (channel.channel_type === "TextChannel" && prefixType) {
+                return <>#{channel.name}</>;
+            }
+
+            return <>{channel.name}</>;
+        },
+        [{ key: "channels" }, { key: "users" }],
+    );
 }
 
 export type MessageObject = Omit<Message, "edited"> & { edited?: string };

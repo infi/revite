@@ -4,7 +4,7 @@ import { Route, useHistory, useParams } from "react-router-dom";
 import { Text } from "preact-i18n";
 
 import { useChannel, useForceUpdate } from "../../context/revoltjs/hooks";
-import { getChannelName } from "../../context/revoltjs/util";
+import { useChannelName } from "../../context/revoltjs/util";
 
 import Category from "../../components/ui/Category";
 
@@ -49,7 +49,7 @@ export default function ChannelSettings() {
                     category: (
                         <Category
                             variant="uniform"
-                            text={getChannelName(ctx.client, channel, true)}
+                            text={useChannelName(channel._id, true)}
                         />
                     ),
                     id: "overview",
