@@ -10,7 +10,8 @@ import { useLayoutEffect, useState } from "preact/hooks";
 
 import { useRenderState } from "../../../../lib/renderer/Singleton";
 
-import { useForceUpdate, useUser } from "../../../../context/revoltjs/hooks";
+import { useClient } from "../../../../context/revoltjs/RevoltClient";
+import { useData } from "../../../../context/revoltjs/hooks";
 import { mapMessage, MessageObject } from "../../../../context/revoltjs/util";
 
 import Markdown from "../../../markdown/Markdown";
@@ -119,7 +120,7 @@ export const ReplyBase = styled.div<{
 `;
 
 export function MessageReply({ index, channel, id }: Props) {
-    const ctx = useForceUpdate();
+    const client = useClient();
     const view = useRenderState(channel);
     if (view?.type !== "RENDER") return null;
 
@@ -133,7 +134,7 @@ export function MessageReply({ index, channel, id }: Props) {
         if (m) {
             setMessage(m);
         } else {
-            ctx.client.channels
+            client.channels
                 .fetchMessage(channel, id)
                 .then((m) => setMessage(mapMessage(m)));
         }
@@ -150,13 +151,16 @@ export function MessageReply({ index, channel, id }: Props) {
         );
     }
 
-    const user = useUser(message.author, ctx);
+    const relationship = useData(
+        (client) => client.users.get(message.author)?.relationship,
+        [{ key: "users" }],
+    );
     const history = useHistory();
 
     return (
         <ReplyBase head={index === 0}>
             <Reply size={16} />
-            {user?.relationship === Users.Relationship.Blocked ? (
+            {relationship === Users.Relationship.Blocked ? (
                 <>
                     <Text id="app.main.channel.misc.blocked_user" />
                 </>
@@ -167,13 +171,12 @@ export function MessageReply({ index, channel, id }: Props) {
                     ) : (
                         <>
                             <div className="user">
-                                <UserShort user={user} size={16} />
+                                <UserShort user_id={message.author} size={16} />
                             </div>
                             <div
                                 className="content"
                                 onClick={() => {
-                                    const obj =
-                                        ctx.client.channels.get(channel);
+                                    const obj = client.channels.get(channel);
                                     if (obj?.channel_type === "TextChannel") {
                                         history.push(
                                             `/server/${obj.server}/channel/${obj._id}/${message._id}`,

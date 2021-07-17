@@ -5,21 +5,16 @@ import { useContext, useEffect } from "preact/hooks";
 
 import { useIntermediate } from "../context/intermediate/Intermediate";
 import {
-    AppContext,
     ClientStatus,
     StatusContext,
+    useClient,
 } from "../context/revoltjs/RevoltClient";
-import {
-    useChannels,
-    useForceUpdate,
-    useUser,
-} from "../context/revoltjs/hooks";
 
 import Header from "../components/ui/Header";
 
 export default function Open() {
     const history = useHistory();
-    const client = useContext(AppContext);
+    const client = useClient();
     const status = useContext(StatusContext);
     const { id } = useParams<{ id: string }>();
     const { openScreen } = useIntermediate();
@@ -32,13 +27,9 @@ export default function Open() {
         );
     }
 
-    const ctx = useForceUpdate();
-    const channels = useChannels(undefined, ctx);
-    const user = useUser(id, ctx);
-
     useEffect(() => {
         if (id === "saved") {
-            for (const channel of channels) {
+            for (const channel of client.channels.toArray()) {
                 if (channel?.channel_type === "SavedMessages") {
                     history.push(`/channel/${channel._id}`);
                     return;
@@ -53,12 +44,15 @@ export default function Open() {
             return;
         }
 
+        const user = client.users.get(id);
         if (user) {
-            const channel: string | undefined = channels.find(
-                (channel) =>
-                    channel?.channel_type === "DirectMessage" &&
-                    channel.recipients.includes(id),
-            )?._id;
+            const channel: string | undefined = client.channels
+                .toArray()
+                .find(
+                    (channel) =>
+                        channel?.channel_type === "DirectMessage" &&
+                        channel.recipients.includes(id),
+                )?._id;
 
             if (channel) {
                 history.push(`/channel/${channel}`);

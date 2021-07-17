@@ -97,7 +97,7 @@ export default function ReplyBar({ channel, replies, setReplies }: Props) {
                     <Base key={reply.id}>
                         <ReplyBase preview>
                             <ReplyIcon size={22} />
-                            <UserShort user={user} size={16} />
+                            <UserShort user_id={user._id} size={16} />
                             {message.attachments &&
                                 message.attachments.length > 0 && (
                                     <File size={16} />

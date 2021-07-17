@@ -6,7 +6,7 @@ import { QueuedMessage } from "../../../redux/reducers/queue";
 
 import { useIntermediate } from "../../../context/intermediate/Intermediate";
 import { AppContext } from "../../../context/revoltjs/RevoltClient";
-import { useUser } from "../../../context/revoltjs/hooks";
+import { useData } from "../../../context/revoltjs/hooks";
 import { MessageObject } from "../../../context/revoltjs/util";
 
 import Overline from "../../ui/Overline";
@@ -43,11 +43,13 @@ function Message({
     head: preferHead,
     queued,
 }: Props) {
-    // TODO: Can improve re-renders here by providing a list
-    // TODO: of dependencies. We only need to update on u/avatar.
-    const user = useUser(message.author);
     const client = useContext(AppContext);
     const { openScreen } = useIntermediate();
+
+    const username = useData(
+        (client) => client.users.get(message.author)?.username,
+        [{ key: "users" }],
+    );
 
     const content = message.content as string;
     const head = preferHead || (message.replies && message.replies.length > 0);
@@ -99,7 +101,7 @@ function Message({
                 <MessageInfo>
                     {head ? (
                         <UserIcon
-                            target={user?._id}
+                            target={message.author}
                             size={36}
                             onContextMenu={userContext}
                             onClick={openProfile}
@@ -114,7 +116,7 @@ function Message({
                         <span className="detail">
                             <Username
                                 className="author"
-                                username={user?.username}
+                                username={username}
                                 onContextMenu={userContext}
                                 onClick={openProfile}
                             />

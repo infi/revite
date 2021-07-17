@@ -49,15 +49,6 @@ import {
     ClientStatus,
     StatusContext,
 } from "../context/revoltjs/RevoltClient";
-import {
-    useChannel,
-    useChannelPermission,
-    useForceUpdate,
-    useServer,
-    useServerPermission,
-    useUser,
-    useUserPermission,
-} from "../context/revoltjs/hooks";
 import { takeError } from "../context/revoltjs/util";
 
 import Tooltip from "../components/common/Tooltip";
@@ -458,6 +449,7 @@ function ContextMenus(props: Props) {
                     unread,
                     contextualChannel: cxid,
                 }: ContextMenuData) => {
+                    /*
                     const forceUpdate = useForceUpdate();
                     const elements: Children[] = [];
                     let lastDivider = false;
@@ -867,6 +859,8 @@ function ContextMenus(props: Props) {
                     }
 
                     return elements;
+                    */
+                    return null;
                 }}
             </ContextMenuWithData>
             <ContextMenuWithData

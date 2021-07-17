@@ -121,11 +121,6 @@ function useObject(
         : map.toArray();
 }
 
-export function useUser(id?: string, context?: HookContext) {
-    if (typeof id === "undefined") return;
-    return useObject("users", id, context) as Readonly<Users.User> | undefined;
-}
-
 export function useUsers(ids?: string[], context?: HookContext) {
     return useObject("users", ids, context) as (
         | Readonly<Users.User>

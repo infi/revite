@@ -1,6 +1,6 @@
-import { User } from "revolt.js";
-
 import { Text } from "preact-i18n";
+
+import { useData } from "../../../context/revoltjs/hooks";
 
 import UserIcon from "./UserIcon";
 
@@ -16,16 +16,21 @@ export function Username({
 }
 
 export default function UserShort({
-    user,
+    user_id,
     size,
 }: {
-    user?: User;
+    user_id?: string;
     size?: number;
 }) {
+    const username = useData(
+        (client) => (user_id ? client.users.get(user_id)?.username : undefined),
+        [{ key: "users" }],
+    );
+
     return (
         <>
-            <UserIcon size={size ?? 24} target={user?._id} />
-            <Username username={user?.username} />
+            <UserIcon size={size ?? 24} target={user_id} />
+            <Username username={username} />
         </>
     );
 }
