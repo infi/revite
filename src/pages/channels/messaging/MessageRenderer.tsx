@@ -80,10 +80,10 @@ function MessageRenderer({ id, state, queue, highlight }: Props) {
         previous: MessageObject | undefined;
 
     if (state.atTop) {
-        render.push(<ConversationStart id={id} />);
+        render.push(<ConversationStart key="cs" id={id} />);
     } else {
         render.push(
-            <RequiresOnline>
+            <RequiresOnline key="ros">
                 <Preloader type="ring" />
             </RequiresOnline>,
         );
@@ -106,7 +106,7 @@ function MessageRenderer({ id, state, queue, highlight }: Props) {
             adate.getMonth() !== bdate.getMonth() ||
             adate.getDate() !== bdate.getDate()
         ) {
-            render.push(<DateDivider date={adate} />);
+            render.push(<DateDivider key={"dd" + adate} date={adate} />);
             head = true;
         }
 
@@ -116,7 +116,7 @@ function MessageRenderer({ id, state, queue, highlight }: Props) {
     let blocked = 0;
     function pushBlocked() {
         render.push(
-            <BlockedMessage>
+            <BlockedMessage key={previous?._id + "blocked"}>
                 <X size={16} />{" "}
                 <Text
                     id="app.main.channel.misc.blocked_messages"
@@ -206,7 +206,7 @@ function MessageRenderer({ id, state, queue, highlight }: Props) {
         }
     } else {
         render.push(
-            <RequiresOnline>
+            <RequiresOnline key="roe">
                 <Preloader type="ring" />
             </RequiresOnline>,
         );

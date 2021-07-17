@@ -1,3 +1,5 @@
+import isEqual from "lodash.isequal";
+
 import { attachContextMenu } from "preact-context-menu";
 import { memo } from "preact/compat";
 import { useContext, useState } from "preact/hooks";

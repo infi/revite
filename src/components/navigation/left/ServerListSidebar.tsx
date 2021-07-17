@@ -4,6 +4,7 @@ import { Channel, Servers } from "revolt.js/dist/api/objects";
 import styled, { css } from "styled-components";
 
 import { attachContextMenu, openContextMenu } from "preact-context-menu";
+import { useEffect } from "preact/hooks";
 
 import ConditionalLink from "../../../lib/ConditionalLink";
 import PaintCounter from "../../../lib/PaintCounter";
@@ -165,12 +166,12 @@ function Swoosh() {
 }
 
 interface Props {
-    unreads: Unreads;
+    //unreads: Unreads;
     lastOpened: LastOpened;
 }
 
-export function ServerListSidebar({ unreads, lastOpened }: Props) {
-    const ctx = useForceUpdate();
+export function ServerListSidebar({ /*unreads,*/ lastOpened }: Props) {
+    // const ctx = useForceUpdate();
     /*const activeServers = useServers(undefined, ctx) as Servers.Server[];
     const channels = (useChannels(undefined, ctx) as Channel[]).map((x) =>
         mapChannelWithUnread(x, unreads),
@@ -200,11 +201,10 @@ export function ServerListSidebar({ unreads, lastOpened }: Props) {
         };
     });*/
 
-    const path = useLocation().pathname;
+    // const path = useLocation().pathname;
     const { server: server_id } = useParams<{ server?: string }>();
-    // const server = servers.find((x) => x!._id == server_id);
-
     const { openScreen } = useIntermediate();
+    // const server = servers.find((x) => x!._id == server_id);
 
     /*let homeUnread: "mention" | "unread" | undefined;
     let alertCount = 0;
@@ -312,7 +312,7 @@ export function ServerListSidebar({ unreads, lastOpened }: Props) {
 
 export default connectState(ServerListSidebar, (state) => {
     return {
-        unreads: state.unreads,
+        //unreads: state.unreads,
         lastOpened: state.lastOpened,
     };
 });

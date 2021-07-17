@@ -3,6 +3,7 @@ import { Client, PermissionCalculator } from "revolt.js";
 import { Channels, Servers, Users } from "revolt.js/dist/api/objects";
 import Collection from "revolt.js/dist/maps/Collection";
 
+import { JSX } from "preact";
 import { Inputs, useContext, useEffect, useState } from "preact/hooks";
 
 import { AppContext, useClient } from "./RevoltClient";
